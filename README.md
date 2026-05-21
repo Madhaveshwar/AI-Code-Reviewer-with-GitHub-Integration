@@ -91,7 +91,7 @@ The assistant is instructed to return these sections:
 3. Select the repository, branch, and `app.py` as the main file.
 4. Add `GROQ_API_KEY` in the app settings or Streamlit secrets.
 5. Ensure `requirements.txt` is present in the repo.
-6. Deploy and verify that the app can reach the OpenAI API.
+6. Deploy and verify that the app can reach the Groq API.
 
 If you prefer secrets over environment files on Streamlit Cloud, add a `.streamlit/secrets.toml` entry such as:
 
