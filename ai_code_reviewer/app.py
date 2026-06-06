@@ -15,22 +15,23 @@ import streamlit.components.v1 as components
 
 # Ensure the parent directory is on the search path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from reviewer import (
+from ai_code_reviewer.reviewer import (
     build_groq_client,
     review_pull_request,
     review_single_code_snippet,
     review_entire_repository,
     GroqAPIError,
 )
-from github_service import GitHubService, parse_repo_url
-from repository_analyzer import analyze_repository
-from report_generator import (
+from ai_code_reviewer.github_service import GitHubService, parse_repo_url
+from ai_code_reviewer.repository_analyzer import analyze_repository
+from ai_code_reviewer.report_generator import (
     generate_markdown_report,
     generate_json_report,
     generate_pdf_report,
 )
-from utils.prompts import SUPPORTED_LANGUAGE_OPTIONS
+from ai_code_reviewer.utils.prompts import SUPPORTED_LANGUAGE_OPTIONS
 
 # Set page config
 st.set_page_config(
@@ -217,10 +218,7 @@ def clear_pr_state() -> None:
 inject_styles()
 initialize_state()
 
-# Fetch Credentials strictly from Environment (normalise mixed-case)
-if not os.getenv("GROQ_API_KEY") and os.getenv("Groq_api_key"):
-    os.environ["GROQ_API_KEY"] = os.environ["Groq_api_key"]
-
+# Fetch Credentials strictly from Environment
 github_token = os.getenv("GITHUB_TOKEN", "").strip()
 groq_api_key = os.getenv("GROQ_API_KEY", "").strip()
 
@@ -875,7 +873,7 @@ if mode == "GitHub PR Review":
                         before_code = sf.get("before_code")
                         after_code = sf.get("after_code")
                         if before_code or after_code:
-                            from utils.prompts import code_fence_language
+                            from ai_code_reviewer.utils.prompts import code_fence_language
                             ext = os.path.splitext(sf['file'])[1].lower()
                             ext_map = {
                                 ".py": "Python",
@@ -931,7 +929,7 @@ if mode == "GitHub PR Review":
                         before_code = s.get("before_code")
                         after_code = s.get("after_code")
                         if before_code or after_code:
-                            from utils.prompts import code_fence_language
+                            from ai_code_reviewer.utils.prompts import code_fence_language
                             ext = os.path.splitext(s['file'])[1].lower()
                             ext_map = {
                                 ".py": "Python",
@@ -1328,7 +1326,7 @@ else:
                     before_code = f.get("before_code")
                     after_code = f.get("after_code")
                     if before_code or after_code:
-                        from utils.prompts import code_fence_language
+                        from ai_code_reviewer.utils.prompts import code_fence_language
                         preview_lang = code_fence_language(selected_lang)
                         c1, c2 = st.columns(2)
                         with c1:

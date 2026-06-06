@@ -1,5 +1,7 @@
 .env
-.venv/
-__pycache__/
-*.pyc
-.streamlit/secrets.toml
+*.pdf
+.reviewer_cache.json
+ai_code_reviewer/.reviewer_cache.json
+exports/
+ai_code_reviewer/exports/
+0.47.0

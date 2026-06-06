@@ -10,18 +10,18 @@ from groq import Groq
 from langsmith import Client, traceable
 
 # Ensure the parent directory is on the search path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.prompts import (
+from ai_code_reviewer.utils.prompts import (
     SYSTEM_COMBINED_PROMPT,
     build_combined_prompt,
     normalize_language_name,
 )
-from utils.validation import is_valid_code, should_skip_file
-from security_scanner import scan_security, parse_json_from_llm
-from code_smell_detector import detect_code_smells
-from test_generator import generate_tests
-from repository_analyzer import analyze_repository
+from ai_code_reviewer.utils.validation import is_valid_code, should_skip_file
+from ai_code_reviewer.security_scanner import scan_security, parse_json_from_llm
+from ai_code_reviewer.code_smell_detector import detect_code_smells
+from ai_code_reviewer.test_generator import generate_tests
+from ai_code_reviewer.repository_analyzer import analyze_repository
 
 MODEL_NAME = "llama-3.3-70b-versatile"  # Default placeholder
 MODEL_TEMPERATURE = 0.3
@@ -196,7 +196,7 @@ The JSON response MUST match this schema exactly:
         "technical_debt": technical_debt_value
       }
     }
-  ],
+  },
   "repository_insights": "Qualitative engineering report markdown string (or null if not requested)"
 }
 
@@ -397,12 +397,9 @@ PLACEHOLDER_VALUES = {
 
 
 def _get_config_value(name: str) -> str | None:
-    """Resolve a configuration value from environment or streamlit secrets, normalising mixed-case Groq API key."""
+    """Resolve a configuration value from environment or streamlit secrets."""
     # Attempt to read from environment first (e.g. .env is loaded)
     value = os.getenv(name)
-    if not value and name == "GROQ_API_KEY":
-        value = os.getenv("Groq_api_key")
-        
     if value:
         if value.strip() in PLACEHOLDER_VALUES or value.strip().startswith("your_"):
             return None
@@ -412,8 +409,6 @@ def _get_config_value(name: str) -> str | None:
     try:
         import streamlit as st
         val = st.secrets.get(name)
-        if not val and name == "GROQ_API_KEY":
-            val = st.secrets.get("Groq_api_key")
         if val:
             return val
     except Exception:
@@ -461,6 +456,9 @@ def build_langsmith_client() -> Client | None:
         return None
     return Client(api_key=api_key)
 
+
+
+from typing import Any
 
 @traceable(name="General Code Review")
 def scan_general_review(
@@ -567,6 +565,7 @@ def resolve_scores(file_scores_list: list[dict], risk_score: int, severity_count
         else:
             avg_scores[k] = fallback[k]
     return avg_scores
+
 
 
 @traceable(name="PR Review Analysis Pipeline", run_type="chain")
@@ -862,6 +861,17 @@ Recommendation: {f['suggestion']}"""
         "cached_results_used": cached_results_used,
         "scores": overall_scores,
     }
+
+    # Record Metadata for LangSmith
+    capture_langsmith_metadata(
+        repo_name=repo_name,
+        pr_number=pr_number,
+        risk_score=risk_score,
+        findings_count=len(all_findings),
+        latency=latency,
+    )
+
+    return review_result
 
 
 @traceable(name="Single Code Snippet Scan", run_type="chain")
