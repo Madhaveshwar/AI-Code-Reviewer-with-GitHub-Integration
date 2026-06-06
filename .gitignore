@@ -5,3 +5,5 @@ ai_code_reviewer/.reviewer_cache.json
 exports/
 ai_code_reviewer/exports/
 0.47.0
+__pycache__/
+*.pyc

@@ -196,7 +196,7 @@ The JSON response MUST match this schema exactly:
         "technical_debt": technical_debt_value
       }
     }
-  ],
+  },
   "repository_insights": "Qualitative engineering report markdown string (or null if not requested)"
 }
 

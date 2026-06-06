@@ -59,11 +59,9 @@ Created an AI-powered code review assistant integrated with GitHub for automated
 
 ## 📁 Project Structure
 
-Refactored layout:
+Root layout:
 
 ```text
-ai_code_reviewer/
-│
 ├── app.py                   # Main Streamlit dashboard application UI
 ├── github_service.py        # PyGithub wrapper for repo stats, PR details, and comments
 ├── reviewer.py              # Orchestration manager coordinating all review engines
@@ -80,7 +78,7 @@ ai_code_reviewer/
 ├── prompts/
 ├── templates/
 ├── exports/                 # Cache folder storing downloaded PDF reports
-└── requirements.txt         # Subproject dependencies
+└── requirements.txt         # Project dependencies
 ```
 
 ---
@@ -131,7 +129,7 @@ LANGCHAIN_PROJECT=Automated_Code_Reviewer
    ```
    *Alternative:*
    ```bash
-   streamlit run ai_code_reviewer/app.py
+   streamlit run app.py
    ```
 
 ---

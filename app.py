@@ -547,25 +547,26 @@ if mode == "GitHub PR Review":
             ]
             selected_option = st.selectbox("Choose open Pull Request", options=pr_options)
 
-            pr_num = int(selected_option.split(" - ")[0].replace("#", ""))
+            if selected_option:
+                pr_num = int(selected_option.split(" - ")[0].replace("#", ""))
 
-            # Fetch details if selected PR changes
-            if (
-                not st.session_state.selected_pr
-                or st.session_state.selected_pr.get("number") != pr_num
-            ):
-                with st.spinner("Downloading pull request metadata..."):
-                    try:
-                        svc = GitHubService(github_token if github_token else None)
-                        pr_info = svc.get_pr_details(repo_name, pr_num)
-                        pr_files = svc.get_pr_files(repo_name, pr_num)
+                # Fetch details if selected PR changes
+                if (
+                    not st.session_state.selected_pr
+                    or st.session_state.selected_pr.get("number") != pr_num
+                ):
+                    with st.spinner("Downloading pull request metadata..."):
+                        try:
+                            svc = GitHubService(github_token if github_token else None)
+                            pr_info = svc.get_pr_details(repo_name, pr_num)
+                            pr_files = svc.get_pr_files(repo_name, pr_num)
 
-                        st.session_state.selected_pr = pr_info
-                        st.session_state.pr_files = pr_files
-                        st.session_state.review_results = None
-                        st.session_state.repo_analysis = None
-                    except Exception as e:
-                        st.error(f"Failed to fetch PR details: {e}")
+                            st.session_state.selected_pr = pr_info
+                            st.session_state.pr_files = pr_files
+                            st.session_state.review_results = None
+                            st.session_state.repo_analysis = None
+                        except Exception as e:
+                            st.error(f"Failed to fetch PR details: {e}")
 
             if st.session_state.selected_pr:
                 pr = st.session_state.selected_pr
