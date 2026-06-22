@@ -1,6 +1,5 @@
 """AI Reviewer engine that coordinates reviews, security audits, and code smell scans."""
 
-from __future__ import annotations
 
 import os
 import sys
